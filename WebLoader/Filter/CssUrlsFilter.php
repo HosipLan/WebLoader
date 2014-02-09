@@ -92,28 +92,10 @@ class CssUrlsFilter
 	 */
 	public function __invoke($code, \WebLoader\Compiler $loader, $file = null)
 	{
-		// thanks to kravco
-		$regexp = '~
-			(?<![a-z])
-			url\(                                     ## url(
-				\s*                                   ##   optional whitespace
-				([\'"])?                              ##   optional single/double quote
-				(   (?: (?:\\\\.)+                    ##     escape sequences
-					|   [^\'"\\\\,()\s]+              ##     safe characters
-					|   (?(1)   (?!\1)[\'"\\\\,() \t] ##       allowed special characters
-						|       ^                     ##       (none, if not quoted)
-						)
-					)*                                ##     (greedy match)
-				)
-				(?(1)\1)                              ##   optional single/double quote
-				\s*                                   ##   optional whitespace
-			\)                                        ## )
-		~xs';
+		$regexp = '~(?<![a-z])url\\(\\s*([\'"])?([^()\'"]+)(?(1)\\1)\\s*\\)~s';
 
 		$self = $this;
-
-		return preg_replace_callback($regexp, function ($matches) use ($self, $file)
-		{
+		return preg_replace_callback($regexp, function ($matches) use ($self, $file) {
 			return "url('" . $self->absolutizeUrl($matches[2], $matches[1], $file) . "')";
 		}, $code);
 	}
