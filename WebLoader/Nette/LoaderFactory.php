@@ -54,6 +54,16 @@ class LoaderFactory
 
 	/**
 	 * @param string $name
+	* @return \WebLoader\Nette\JsxLoader
+	 */
+	public function createJsxLoader($name)
+	{
+		$loader = $this->createJavaScriptLoader($name);
+		return new JsxLoader($loader->getCompiler(), $loader->getTempPath());
+	}
+
+	/**
+	 * @param string $name
 	 * @return string
 	 */
 	private function formatTempPath($name)
